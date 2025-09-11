@@ -16,7 +16,7 @@ function Summary() {
         Platform Summary
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ProtocolStatCard label="Total Staked" value={formattedTotalStaked}/>
+        <ProtocolStatCard label="Total Staked" value={<span>{formattedTotalStaked} STK</span>}/>
         <ProtocolStatCard label="Current APR" value="5%" />
         <ProtocolStatCard
           label="Reward Rate"

@@ -10,7 +10,7 @@ function StakeForm() {
     const numericAmount = Number(amount);
 
     if (!numericAmount || numericAmount <= 0) {
-      alert("Enter a valid amount to stake.");
+      toast("Enter a valid amount to stake.");
       return;
     }
 
@@ -24,7 +24,6 @@ function StakeForm() {
     })
       setAmount(""); 
     } catch (err) {
-      console.error("Staking failed:", err);
       toast.error(`Stake flow failed: ${err}`)
     }
   };
@@ -48,7 +47,7 @@ function StakeForm() {
             step="any" 
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            disabled={loading}g
+            disabled={loading}
           />
         </div>
 

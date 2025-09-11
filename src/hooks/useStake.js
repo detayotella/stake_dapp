@@ -18,7 +18,6 @@ const useStake = () => {
   const [totalStaked, setTotalStaked] = useState("0");
   const [currentRewardRate, setCurrentRewardRate] = useState("0");
 
-  // Fetch initial totalStaked and rewardRate
   const fetchTotals = useCallback(async () => {
     try {
       const total = await publicClient.readContract({

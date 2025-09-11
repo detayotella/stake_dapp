@@ -4,6 +4,7 @@ import {
   useWriteContract,
   usePublicClient,
   useWatchContractEvent,
+  useWalletClient,
 } from "wagmi";
 import { STAKE_CONTRACT_ABI } from "../config/ABI";
 import { toast } from "sonner";
@@ -12,13 +13,14 @@ const useClaim = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
+  const walletClient = useWalletClient();
   
   const [loading, setLoading] = useState(false);
   const [latestClaimed, setLatestClaimed] = useState("0"); 
   const [pendingRewards, setPendingRewards] = useState("0");
 
   const claimRewards = useCallback(async () => {
-    if (!address) {
+    if (!address || !walletClient) {
       toast("Please connect your wallet");
       return;
     }

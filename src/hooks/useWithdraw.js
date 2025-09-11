@@ -8,19 +8,20 @@ import {
 } from "wagmi";
 import { STAKE_CONTRACT_ABI } from "../config/ABI";
 import { parseEther, decodeEventLog } from "viem";
+import { toast } from "sonner";
 
 const useWithdraw = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState([]); // store decoded events
+  const [events, setEvents] = useState([]); 
 
-  // Withdraw function
+
   const withdraw = useCallback(
     async (amount) => {
       if (!address) {
-        console.log("⚠️ Please connect your wallet");
+        toast.log("Please connect your wallet");
         return;
       }
 
@@ -29,7 +30,7 @@ const useWithdraw = () => {
       try {
         setLoading(true);
 
-        // Simulate tx
+
         const { request } = await publicClient.simulateContract({
           address: import.meta.env.VITE_STAKING_CONTRACT,
           abi: STAKE_CONTRACT_ABI,
@@ -38,11 +39,10 @@ const useWithdraw = () => {
           account: address,
         });
 
-        // Send tx
         const txHash = await writeContractAsync(request);
-        console.log("✅ Withdraw tx hash:", txHash);
+        console.log("Withdraw tx hash:", txHash);
       } catch (err) {
-        console.error("❌ Withdraw error:", err);
+        console.error("Withdraw error:", err);
       } finally {
         setLoading(false);
       }
@@ -50,7 +50,7 @@ const useWithdraw = () => {
     [address, writeContractAsync, publicClient]
   );
 
-  // Watch Withdrawn events and decode them
+  
   useWatchContractEvent({
     address: import.meta.env.VITE_STAKING_CONTRACT,
     abi: STAKE_CONTRACT_ABI,
@@ -64,9 +64,8 @@ const useWithdraw = () => {
         }).args
       );
 
-      console.log("📢 Decoded Withdraw events:", decodedEvents);
+      console.log("Decoded Withdraw events:", decodedEvents);
 
-      // Append new events to existing state
       setEvents((prev) => [...prev, ...decodedEvents]);
     },
   });
