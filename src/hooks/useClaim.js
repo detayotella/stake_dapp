@@ -20,10 +20,11 @@ const useClaim = () => {
   const [pendingRewards, setPendingRewards] = useState("0");
 
   const claimRewards = useCallback(async () => {
-    if (!address || !walletClient) {
-      toast("Please connect your wallet");
-      return;
+    if (!address) { 
+        toast("Please connect your wallet");
+        return;
     }
+
 
     try {
       setLoading(true);

@@ -17,8 +17,14 @@ const useStake = () => {
   const [loading, setLoading] = useState(false);
   const [totalStaked, setTotalStaked] = useState("0");
   const [currentRewardRate, setCurrentRewardRate] = useState("0");
+  const [timestamp, setTimestamp] = useState();
 
   const fetchTotals = useCallback(async () => {
+    if (!address) { 
+        toast("Please connect your wallet");
+        return;
+    }
+
     try {
       const total = await publicClient.readContract({
         address: import.meta.env.VITE_STAKING_CONTRACT,
@@ -74,7 +80,6 @@ const useStake = () => {
         });
         await writeContractAsync(stakeSim.request);
 
-        // Refresh totals after staking
         fetchTotals();
       } catch (err) {
         console.error("Staking error:", err?.shortMessage || err.message, err);
@@ -86,23 +91,11 @@ const useStake = () => {
     [address, writeContractAsync, publicClient, fetchTotals]
   );
 
-  // Listen to all events that affect totalStaked
-  useWatchContractEvent({
-    address: import.meta.env.VITE_STAKING_CONTRACT,
-    abi: STAKE_CONTRACT_ABI,
-    eventName: "Staked",
-    onLogs(logs) {
-      logs.forEach((log) => {
-        setTotalStaked(log.args.newTotalStaked?.toString());
-        setCurrentRewardRate(log.args.currentRewardRate?.toString());
-      });
-    },
-  });
 
   useWatchContractEvent({
     address: import.meta.env.VITE_STAKING_CONTRACT,
     abi: STAKE_CONTRACT_ABI,
-    eventName: "Withdrawn",
+    eventName: "Staked",
     onLogs(logs) {
       logs.forEach((log) => {
         setTotalStaked(log.args.newTotalStaked?.toString());

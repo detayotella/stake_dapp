@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import useClaim from "../../hooks/useClaim";
 
 function ClaimCard() {
-  const { claimRewards, loading, claimedAmount } = useClaim();
+  const { claimRewards, loading, claimedAmount, latestClaimed } = useClaim();
 
   const handleClaimRewards = async () => {
     try {
@@ -26,7 +26,7 @@ function ClaimCard() {
 
       <div className="mt-2">
 
-        <p className="text-3xl font-bold">{claimedAmount} STK</p>
+        <p className="text-3xl font-bold">{latestClaimed} STK</p>
       </div>
 
       <button
