@@ -1,5 +1,5 @@
 // hooks/useWithdraw.js
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import {
   useAccount,
   useWriteContract,
@@ -9,12 +9,14 @@ import {
 import { STAKE_CONTRACT_ABI } from "../config/ABI";
 import { parseEther, decodeEventLog } from "viem";
 import { toast } from "sonner";
+import { GlobalStateContext } from "../context";
 
 const useWithdraw = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { loading, setLoading }= useContext(GlobalStateContext);
   const [events, setEvents] = useState([]); 
 
 

@@ -3,28 +3,31 @@ import useStake from "../../hooks/useStake";
 import { toast } from "sonner";
 
 function StakeForm() {
-  const { approveAndStake, loading } = useStake();
-  const [amount, setAmount] = useState(""); 
+  const { approve, stake, loading, approved } = useStake();
+  const [amount, setAmount] = useState("");
+
+  const handleApprove = async () => {
+    if (!amount || Number(amount) <= 0) {
+      toast("Enter a valid amount to approve.");
+      return;
+    }
+    try {
+      await approve(amount);
+    } catch (err) {
+      console.error("Approval failed:", err);
+    }
+  };
 
   const handleStake = async () => {
-    const numericAmount = Number(amount);
-
-    if (!numericAmount || numericAmount <= 0) {
+    if (!amount || Number(amount) <= 0) {
       toast("Enter a valid amount to stake.");
       return;
     }
-
     try {
-      const txHash = await approveAndStake(numericAmount);
-      toast("Staked successfully!", {
-            description: `Transaction Hash: ${txHash}`,
-            action: {
-            label: "View",
-            onClick: () => window.open(`https://sepolia.etherscan.io/tx/${txHash}`, "_blank")}
-    })
-      setAmount(""); 
+      await stake(amount);
+      setAmount("");
     } catch (err) {
-      toast.error(`Stake flow failed: ${err}`)
+      console.error("Stake failed:", err);
     }
   };
 
@@ -34,29 +37,40 @@ function StakeForm() {
         Stake Your Tokens
       </h1>
       <p className="text-gray-600 max-w-md mx-auto">
-        Easily stake your assets and start earning rewards. Enter the amount you want to stake below.
+        Approve tokens first, then stake them to start earning rewards.
       </p>
 
-      <div className="mt-8 max-w-sm mx-auto flex flex-col sm:flex-row items-center gap-4">
-        <div className="relative w-full">
-          <input
-            className="form-input w-full rounded-lg h-14 pl-10 pr-4 border border-[var(--border-color)] focus:ring-2 focus:ring-[var(--primary-color)]"
-            placeholder="Enter amount"
-            type="number"
-            min="0"
-            step="any" 
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            disabled={loading}
-          />
-        </div>
+      <div className="mt-8 max-w-sm mx-auto flex flex-col gap-4">
+        {/* Input */}
+        <input
+          className="form-input w-full rounded-lg h-14 pl-4 pr-4 border border-[var(--border-color)] focus:ring-2 focus:ring-[var(--primary-color)]"
+          placeholder="Enter amount"
+          type="number"
+          min="0"
+          step="any"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          disabled={loading}
+        />
 
+        {/* Approve button */}
         <button
-          onClick={handleStake}
-          className={`btn-primary flex w-full sm:w-auto min-w-[120px] justify-center rounded-lg h-14 px-6 text-base font-semibold ${
+          onClick={handleApprove}
+          className={`btn-primary w-full rounded-lg h-14 px-6 text-base font-semibold ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={loading}
+        >
+          {loading ? "Approving..." : "Approve"}
+        </button>
+
+        {/* Stake button */}
+        <button
+          onClick={handleStake}
+          className={`btn-primary w-full rounded-lg h-14 px-6 text-base font-semibold ${
+            loading || !approved ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={loading || !approved}
         >
           {loading ? "Staking..." : "Stake"}
         </button>

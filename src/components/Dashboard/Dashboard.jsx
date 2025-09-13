@@ -1,20 +1,30 @@
 import formatToken from "../../utils/format";
 import useStake from "../../hooks/useStake";
-import useWithdraw from "../../hooks/useWithdraw";
-import UserStatCard from "./useStatCard";
 import useClaim from "../../hooks/useClaim";
+import { useAccount } from "wagmi";
+import { useSubgraph } from "../../hooks/useSubgraph";
+import { useEffect, useState } from "react";
+import UserStatCard from "./useStatCard";
 
 function Dashboard() {
-  const { totalStaked, loading } = useStake(); 
-  const { events } = useWithdraw();
-  const { pendingRewards }= useClaim();
+  const { address } = useAccount();
+  const { loading } = useStake(); 
+  const { pendingRewards } = useClaim();
+  const { getUserStakes } = useSubgraph();
+  const [latestStake, setLatestStake] = useState("0");
 
-  const latestStake =
-    events.length > 0
-      ? events[events.length - 1].newTotalStaked?.toString() || "0"
-      : totalStaked;
+  useEffect(() => {
+    const loadStake = async () => {
+      if (!address) return;
+      const data = await getUserStakes(address);
+      if (data.stakeds.length > 0) {
+        setLatestStake(data.stakeds[0].newTotalStaked);
+      }
+    };
+    loadStake();
+  }, [address]);
 
-  const formattedStake = formatToken(latestStake); 
+  const formattedStake = formatToken(latestStake);
 
   return (
     <section>

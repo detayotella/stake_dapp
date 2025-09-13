@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import {
   useAccount,
   useWriteContract,
@@ -7,13 +7,15 @@ import {
 } from "wagmi";
 import { STAKE_CONTRACT_ABI } from "../config/ABI";
 import { toast } from "sonner";
+import { GlobalStateContext } from "../context";
 
 const useEmergency = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { loading, setLoading} = useContext(GlobalStateContext);
   const [lastEmergencyAmount, setLastEmergencyAmount] = useState("0");
   const [lastEmergencyTime, setLastEmergencyTime] = useState(null);
 
